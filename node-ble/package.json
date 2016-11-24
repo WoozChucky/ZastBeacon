@@ -1,0 +1,16 @@
+{
+  "name": "node-ble",
+  "version": "1.0.0",
+  "description": "Mobility NodeJs BLE Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mobility @ Novabase",
+  "license": "ISC",
+  "devDependencies": {
+    "bleno": "^0.4.1",
+    "nodemon": "^1.11.0",
+    "play-sound": "^1.1.1"
+  }
+}

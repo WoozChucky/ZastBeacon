@@ -63,21 +63,6 @@ MobilityCharacteristic.prototype.onWriteRequest = function(data, offset, without
         return;
     }
 
-    var arrayOfStrings = this._value.toString('utf-8').split(' ');
-    if(arrayOfStrings.length < 2)
-    {
-        console.log('Wrong argument number, expected CHECKIN <StationId>');
-        callback(this.RESULT_UNLIKELY_ERROR, 0);
-        return;
-    }
-
-    if(arrayOfStrings[2] != CHECKIN)
-    {
-        console.log('Wrong argument, expected CHECKIN');
-        callback(this.RESULT_UNLIKELY_ERROR, 0);
-        return;
-    }
-
     if(Helper.DataExistsInFile(this._value))
     {
         console.log('Already exists in Logs.txt');

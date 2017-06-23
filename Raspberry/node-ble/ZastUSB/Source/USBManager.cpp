@@ -30,7 +30,7 @@ void USBManager::initialize() {
         throw "LibUSB Init Error";
     }
 
-    libusb_set_debug(context, 3); //set verbosity level to 3, as suggested in the documentation
+    libusb_set_debug(context, 4); //set verbosity level to 3, as suggested in the documentation
 }
 
 void USBManager::scanDevices() {
@@ -152,17 +152,19 @@ void USBManager::writeData(struct ZaBeaconCommand command) {
 
     cout<<"Data->"<<buffer<<"<-"<<endl; //just to see the data we want to write : ABC
     cout<<"Writing Data..."<<endl;
-    result = libusb_bulk_transfer(device_handle, 0x04, buffer, sizeof(buffer), &bytesRead, 0);
+    result = libusb_bulk_transfer(device_handle, 0x04, buffer, sizeof(struct ZaBeaconCommand), &bytesRead, 5000);
     if(result == 0 && bytesRead == 8) //we wrote the 3 bytes successfully
         cout<<"Writing Successful!"<<endl;
     else {
         cout<<"Wrote " << bytesRead << " bytes." << " Expected " << sizeof(buffer) << " bytes." << endl;
         perror("Write error: ");
+        fprintf(stderr, "Error during control transfer: %s\n",
+                libusb_error_name(result));
     }
 }
 
 int USBManager::readData() {
-    result = libusb_bulk_transfer(device_handle, (1 | 0x83), buffer, sizeof(buffer), &bytesRead, 0);
+    result = libusb_bulk_transfer(device_handle, (1 | 0x80), buffer, sizeof(buffer), &bytesRead, 10000);
     if(result == 0 && bytesRead == 8) { //we read the bytes successfully
         cout << "Read Successful!" << endl;
 

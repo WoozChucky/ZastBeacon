@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 
 if(WIN32)
-    set(SOURCE_FILES Source/main.cpp Source/Windows/SerialPort.cpp Headers/Windows/SerialPort.h Headers/USBManager.h Source/USBManager.cpp Headers/UDPServer.h Source/UDPServer.cpp Headers/ZaBeaconCommand.hpp)
+    set(SOURCE_FILES Source/main.cpp Headers/USBManager.h Source/USBManager.cpp Headers/UDPServer.h Source/UDPServer.cpp Headers/ZaBeaconCommand.hpp)
     add_definitions(-D__WIN32)
 
     set(Boost_DEBUG ON)
@@ -25,7 +25,7 @@ if(WIN32)
 endif (WIN32)
 
 if(UNIX)
-    set(SOURCE_FILES Source/main.cpp Source/Unix/SerialPort.cpp Headers/Unix/SerialPort.h Headers/USBManager.h Source/USBManager.cpp Headers/UDPServer.h Source/UDPServer.cpp Headers/ZaBeaconCommand.hpp)
+    set(SOURCE_FILES Source/main.cpp Headers/USBManager.h Source/USBManager.cpp Headers/UDPServer.h Source/UDPServer.cpp Headers/ZaBeaconCommand.hpp)
     add_definitions(-D__UNIX)
 
     FIND_PACKAGE(Boost 1.6.4 REQUIRED COMPONENTS system)

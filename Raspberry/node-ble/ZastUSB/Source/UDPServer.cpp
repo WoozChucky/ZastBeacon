@@ -54,10 +54,10 @@ void UDPServer::listen() {
 
                             _usbManager->writeData(_command);
 
-                            int result = _usbManager->readData();
+                            //int result = _usbManager->readData();
 
                             sprintf(_buffer, "%d",
-                                    result); // cast result from gate response to buffer to be sent to NodeJS again
+                                    0); // cast result from gate response to buffer to be sent to NodeJS again
 
                             send(_buffer);
 

@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <libusb-1.0/libusb.h>
+
 #include "ZaBeaconCommand.hpp"
 
 #define ITERATE true
@@ -17,15 +18,20 @@ using namespace std;
 
 class USBManager {
 private:
+
+
     libusb_context *context = nullptr;
     libusb_device_handle *device_handle;
     libusb_device** devices;
+    void printDeviceInfo(libusb_device *dev);
+
     unsigned char buffer[250];
+
     int result;
     int bytesRead;
     ssize_t deviceCount;
 
-    void printDeviceInfo(libusb_device *dev);
+
 
 public:
     USBManager();

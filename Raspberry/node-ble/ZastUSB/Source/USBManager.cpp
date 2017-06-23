@@ -6,12 +6,12 @@
 #include <cstring>
 #include "../Headers/USBManager.h"
 
+
 USBManager::USBManager() {
 
 }
 
 USBManager::~USBManager() {
-    delete [] buffer;
     if(devices != nullptr){
         libusb_free_device_list(devices, 1); //free the list, unref the arrays in it
     }
@@ -174,6 +174,5 @@ int USBManager::readData() {
         return -1;
     }
 }
-
 
 

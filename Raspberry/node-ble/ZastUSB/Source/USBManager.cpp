@@ -148,8 +148,6 @@ void USBManager::writeData(struct ZaBeaconCommand command) {
 
     memcpy(buffer, &command, sizeof(struct ZaBeaconCommand));
 
-    //buffer = static_cast<unsigned  char *>(command);
-
     cout<<"Data->"<<buffer<<"<-"<<endl; //just to see the data we want to write : ABC
     cout<<"Writing Data..."<<endl;
     result = libusb_bulk_transfer(device_handle, 0x04, buffer, sizeof(struct ZaBeaconCommand), &bytesRead, 5000);
@@ -164,7 +162,7 @@ void USBManager::writeData(struct ZaBeaconCommand command) {
 }
 
 int USBManager::readData() {
-    result = libusb_bulk_transfer(device_handle, (1 | 0x80), buffer, sizeof(buffer), &bytesRead, 10000);
+    result = libusb_bulk_transfer(device_handle, (1 | 0x80), buffer, sizeof(buffer), &bytesRead, 5000);
     if(result == 0 && bytesRead == 8) { //we read the bytes successfully
         cout << "Read Successful!" << endl;
 

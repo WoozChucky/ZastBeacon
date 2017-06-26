@@ -71,31 +71,35 @@ MobilityCharacteristic.prototype.onWriteRequest = function(data, offset, without
 
     server.on('message', function (message, remote) {
         console.log(remote.address + ':' + remote.port +' - ' + message);
-        Helper.Write(this._value);
-        Helper.BlinkLED();
-        this._valid = true;
-        console.log("Success!");
+
+	if(message == '0') {
+		Helper.Write(this._value);
+		Helper.BlinkLED();
+		this._valid = true;
+		console.log("Success!");
+	}
     });
 
     var ZaBeaconCommand = Struct()
 	.word32Sle('operationType')
 	.word32Sle('checkinType')
+	 .word32Sle('operatorId')
 	.chars('deviceId',20)
         .chars('transactionDateTime',30)
-        .word64Sle('operatorId')
 	.chars('lineDirection',30)
 	.chars('seatNumber',8);
-    ZaBeaconCommand.allocate();
 
-    ZaBeaconCommand.fields.operationType = 0;
-    ZaBeaconCommand.fields.checkinType = 0;
-    ZaBeaconCommand.fields.deviceId = 'Samsung Galaxy S3  \0';
-    ZaBeaconCommand.fields.transactionDateTime = '2017-06-21 18:42:35\0';
-    ZaBeaconCommand.fields.operatorId = 2;
-    ZaBeaconCommand.fields.lineDirection = 'Roma-Arreiro\0';
-    ZaBeaconCommand.fields.seatNumber = 'B15\0';
+	ZaBeaconCommand.allocate();
 
-    var message = ZaBeaconCommand.buffer();
+	ZaBeaconCommand.fields.operationType = 1;
+	ZaBeaconCommand.fields.checkinType = 0;
+	ZaBeaconCommand.fields.operatorId = 2;
+	ZaBeaconCommand.fields.deviceId = 'Samsung Galaxy S3';
+	ZaBeaconCommand.fields.transactionDateTime = '2017-06-21 18:42:35';
+	ZaBeaconCommand.fields.lineDirection = 'Roma-Arreiro';
+	ZaBeaconCommand.fields.seatNumber = 'B15';
+
+	var message = ZaBeaconCommand.buffer();
     
     server.send(message, 0, message.length, 9000, '127.0.0.1', function (err, bytes) {
 		if (err) throw err;

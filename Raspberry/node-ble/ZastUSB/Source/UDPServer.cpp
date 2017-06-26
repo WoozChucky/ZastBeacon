@@ -17,6 +17,10 @@ UDPServer::UDPServer(boost::asio::io_service& io_service, unsigned short port) :
 
     _usbManager->connect(1); // connects to device with index 0, assuming it exists for now
 
+    _command.operationType = 0;
+    _command.checkinType = 0;
+    _command.operatorId = 0;
+
     listen();
 }
 
@@ -65,12 +69,12 @@ void UDPServer::listen() {
                         }
 
                         case OPERATION_TYPE_VALIDATE: {
-                            send("Validation was successful");
+                            send("1");
                             break;
                         }
                         case OPERATION_TYPE_CONFIGURE: {
                             //send request via udp client to Node.JS udp server with Bluetooth configurations
-                            send("Configuration was successful");
+                            send("0");
                             break;
                         }
                     }

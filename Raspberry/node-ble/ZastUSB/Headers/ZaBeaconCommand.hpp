@@ -8,9 +8,9 @@
 struct ZaBeaconCommand {
     int32_t operationType; //0 - Open/ 1 - Validate / 2 - Configure
     int32_t checkinType; //0 - In / 1 - Out
+    int32_t operatorId;
     char deviceId[20];
     char transactionDateTime[30];
-    int64_t operatorId;
     char lineDirection[30];
     char seatNumber[8]; //It is a char array because it can have letters associated
 };

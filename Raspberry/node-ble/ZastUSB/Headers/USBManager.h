@@ -12,6 +12,9 @@
 
 #include "ZaBeaconCommand.hpp"
 
+#define USB_ENDPOINT_IN (0x80 | 3)
+#define USB_ENDPOINT_OUT (0x00 | 4)
+
 #define ITERATE true
 
 using namespace std;
@@ -20,17 +23,18 @@ class USBManager {
 private:
 
 
-    libusb_context *context = nullptr;
-    libusb_device_handle *device_handle;
-    libusb_device** devices;
+    libusb_context *_context = nullptr;
+    libusb_device_handle *_device_handle;
+    libusb_device** _devices;
+
     void printDeviceInfo(libusb_device *dev);
 
-    unsigned char buffer[250];
+    unsigned char _buffer[250];
 
-    int result;
-    int bytesRead;
-    ssize_t deviceCount;
-
+    int _result;
+    int _bytesWritten;
+    int _bytesRead;
+    ssize_t _deviceCount;
 
 
 public:
@@ -40,10 +44,8 @@ public:
     void scanDevices();
     void closeDevice();
     void shutdown();
-    void writeData(struct ZaBeaconCommand command);
-    void pickDevice(); //this is only used while we don't have a permanent USB device information
+    int openGate(struct ZaBeaconCommand command);
     void connect(int index); // public for now
-    int readData();
 };
 
 #endif //ZASTUSB_USBMANAGER_H

@@ -5,8 +5,6 @@
 #ifndef ZASTUSB_UDPSERVER_H
 #define ZASTUSB_UDPSERVER_H
 
-#define MAX_LENGTH 1024
-
 #include <boost/asio.hpp>
 #include <iostream>
 #include <cstdlib>
@@ -26,7 +24,6 @@ private:
 
     // methods
     void listen();
-    void send(std::size_t length);
     void send(std::string message);
 public:
     UDPServer(boost::asio::io_service& io_service, unsigned short port);

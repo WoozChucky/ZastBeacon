@@ -12,42 +12,42 @@ USBManager::USBManager() {
 }
 
 USBManager::~USBManager() {
-    if(devices != nullptr){
-        libusb_free_device_list(devices, 1); //free the list, unref the arrays in it
+    if(_devices != nullptr){
+        libusb_free_device_list(_devices, 1); //free the list, unref the arrays in it
     }
-    if(device_handle != nullptr) {
-        libusb_release_interface(device_handle, 0); //release the claimed interface
-        libusb_close(device_handle); //close the device we opened
+    if(_device_handle != nullptr) {
+        libusb_release_interface(_device_handle, 0); //release the claimed interface
+        libusb_close(_device_handle); //close the device we opened
     }
-    libusb_exit(context); //close the session
+    libusb_exit(_context); //close the session
 }
 
 void USBManager::initialize() {
-    result = libusb_init(&context);
+    _result = libusb_init(&_context);
 
-    if(result < 0) {
+    if(_result < 0) {
         perror("LibUSB Init Error: ");
         throw "LibUSB Init Error";
     }
 
-    libusb_set_debug(context, 4); //set verbosity level to 3, as suggested in the documentation
+    libusb_set_debug(_context, 4); //set verbosity level to 3, as suggested in the documentation
 }
 
 void USBManager::scanDevices() {
 
-    deviceCount = libusb_get_device_list(context, &devices); //get the list of devices
-    if(deviceCount < 0) {
+    _deviceCount = libusb_get_device_list(_context, &_devices); //get the list of devices
+    if(_deviceCount < 0) {
         perror("Get Device Error: ");
         throw "Get Device Error";
     }
 
-    cout<<deviceCount<<" Devices in list."<<endl; //print total number of usb devices
+    cout<<_deviceCount<<" Devices in list."<<endl; //print total number of usb devices
 
     if(ITERATE) {
         ssize_t i; //for iterating through the list
 
-        for(i = 0; i < deviceCount; i++) {
-            printDeviceInfo(devices[i]); //print specs of this device
+        for(i = 0; i < _deviceCount; i++) {
+            printDeviceInfo(_devices[i]); //print specs of this device
         }
     }
 }
@@ -88,91 +88,98 @@ void USBManager::printDeviceInfo(libusb_device *dev) {
 }
 
 void USBManager::closeDevice() {
-    if(device_handle == nullptr){
+    if(_device_handle == nullptr){
         throw "Device handle is already closed!";
     }
-    libusb_release_interface(device_handle, 0); //release the claimed interface
-    libusb_close(device_handle); //close the device we opened
+    libusb_release_interface(_device_handle, 0); //release the claimed interface
+    libusb_close(_device_handle); //close the device we opened
 }
 
 void USBManager::shutdown() {
-    if(device_handle != nullptr) {
+    if(_device_handle != nullptr) {
         throw "closeDevice() must be called before shutdown() when device handle is open!";
     }
 
-    if(devices != nullptr){
-        libusb_free_device_list(devices, 1); //free the list, unref the arrays in it
+    if(_devices != nullptr){
+        libusb_free_device_list(_devices, 1); //free the list, unref the arrays in it
     }
-    libusb_exit(context); //close the session
+    libusb_exit(_context); //close the session
 }
 
 void USBManager::connect(int index) {
 
     libusb_device_descriptor desc;
 
-    result = libusb_get_device_descriptor(devices[index], &desc);
-    if(result < 0) {
+    _result = libusb_get_device_descriptor(_devices[index], &desc);
+    if(_result < 0) {
         perror("libusb_get_device_descriptor error: ");
         throw "Error getting selected device descriptor";
     }
 
-    device_handle = libusb_open_device_with_vid_pid(context, desc.idVendor, desc.idProduct); //these are vendorID and productID I found for my usb device
+    _device_handle = libusb_open_device_with_vid_pid(_context, desc.idVendor, desc.idProduct); //these are vendorID and productID I found for my usb device
 
-    if(device_handle == nullptr) {
+    if(_device_handle == nullptr) {
         perror("Cannot open device: ");
         throw "Cannot open device";
     } else {
         cout << "Device is now open" << endl;
     }
 
-    libusb_free_device_list(devices, 1); //free the list, unref the devices in it
+    libusb_free_device_list(_devices, 1); //free the list, unref the devices in it
     cout << "Rest of devices are now freed" << endl;
 
-    if(libusb_kernel_driver_active(device_handle, 0) == 1) { //find out if kernel driver is attached
+    if(libusb_kernel_driver_active(_device_handle, 0) == 1) { //find out if kernel driver is attached
         cout<<"Kernel Driver Active"<<endl;
-        if(libusb_detach_kernel_driver(device_handle, 0) == 0) //detach it
+        if(libusb_detach_kernel_driver(_device_handle, 0) == 0) //detach it
             cout<<"Kernel Driver Detached!"<<endl;
     } else {
         cout << "Kernel driver available" << endl;
     }
 
-    result = libusb_claim_interface(device_handle, 0); //claim interface 0 (the first) of device (mine had jsut 1)
-    if(result < 0) {
+    _result = libusb_claim_interface(_device_handle, 0); //claim interface 0 (the first) of device (mine had jsut 1)
+    if(_result < 0) {
         perror("Cannot Claim Interface: ");
         throw "Cannot Claim Interface";
     }
     cout<<"Claimed Interface"<<endl;
 }
 
-void USBManager::writeData(struct ZaBeaconCommand command) {
+int USBManager::openGate(struct ZaBeaconCommand command) {
 
-    memcpy(buffer, &command, sizeof(struct ZaBeaconCommand));
+    memset(_buffer, 0, sizeof(_buffer)); // clear buffer
 
-    cout<<"Data->"<<buffer<<"<-"<<endl; //just to see the data we want to write : ABC
-    cout<<"Writing Data..."<<endl;
-    result = libusb_bulk_transfer(device_handle, 0x04, buffer, sizeof(struct ZaBeaconCommand), &bytesRead, 5000);
-    if(result == 0 && bytesRead == 8) //we wrote the 3 bytes successfully
-        cout<<"Writing Successful!"<<endl;
+    memcpy(_buffer, &command, sizeof(struct ZaBeaconCommand)); // copy command to buffer
+
+    int structSize = sizeof(struct ZaBeaconCommand);
+
+    _result = libusb_bulk_transfer(_device_handle, USB_ENDPOINT_OUT, _buffer, structSize, &_bytesWritten, 0);
+
+    if(_result == 0 && _bytesWritten == structSize) {
+        cout<<"Request sent via USB Successfully!"<<endl;
+
+        memset(_buffer, 0, sizeof(_buffer)); // clear buffer
+
+        _result = libusb_bulk_transfer(_device_handle, USB_ENDPOINT_IN, _buffer, sizeof(_buffer), &_bytesRead, 0);
+
+        if(_result == 0) { //we read the bytes successfully
+            cout << "Read via USB Successfully!" << endl;
+
+            return atoi((const char *) _buffer);
+        }
+        else {
+            cout<<"Read " << _bytesRead << " bytes." << " Expected " << sizeof(_buffer) << " bytes." << endl;
+            fprintf(stderr, "Error during control transfer: %s\n",
+                    libusb_error_name(_result));
+            return -1;
+        }
+    }
     else {
-        cout<<"Wrote " << bytesRead << " bytes." << " Expected " << sizeof(buffer) << " bytes." << endl;
-        perror("Write error: ");
+        cout<<"Wrote " << _bytesWritten << " bytes." << " Expected " << structSize << " bytes." << endl;
         fprintf(stderr, "Error during control transfer: %s\n",
-                libusb_error_name(result));
-    }
-}
-
-int USBManager::readData() {
-    result = libusb_bulk_transfer(device_handle, (1 | 0x80), buffer, sizeof(buffer), &bytesRead, 5000);
-    if(result == 0 && bytesRead == 8) { //we read the bytes successfully
-        cout << "Read Successful!" << endl;
-
-        return atoi((const char *) buffer);
-    }
-    else {
-        cout<<"Read " << bytesRead << " bytes." << " Expected " << sizeof(buffer) << " bytes." << endl;
-        perror("Read error: ");
+                libusb_error_name(_result));
         return -1;
     }
+
 }
 
 

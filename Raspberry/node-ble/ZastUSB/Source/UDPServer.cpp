@@ -47,7 +47,6 @@ void UDPServer::listen() {
                 if(!errorCode && bytesReceived > 0) {
 
                     std::cout << "Received " << bytesReceived << " bytes." << std::endl;
-                    //std::cout << "Data -> " << _buffer << std::endl;
 
                     switch (_command.operationType) {
                         default:
@@ -56,12 +55,9 @@ void UDPServer::listen() {
                         case OPERATION_TYPE_OPEN: {
                             //send request to usb manager and wait for response
 
-                            _usbManager->writeData(_command);
+                            int result = _usbManager->openGate(_command);
 
-                            //int result = _usbManager->readData();
-
-                            sprintf(_buffer, "%d",
-                                    0); // cast result from gate response to buffer to be sent to NodeJS again
+                            sprintf(_buffer, "%d", result); // cast result from gate response to buffer to be sent to NodeJS again
 
                             send(_buffer);
 
@@ -84,17 +80,6 @@ void UDPServer::listen() {
 
                     listen(); //should throw error maybe ?
                 }
-            }
-    );
-}
-
-void UDPServer::send(std::size_t length) {
-    _socket.async_send_to(
-            boost::asio::buffer(_buffer, length),
-            _senderEndpoint,
-            [this](boost::system::error_code /*errorCode*/, std::size_t /*bytesSent*/) //params are ignored on purpose for now
-            {
-                listen();
             }
     );
 }

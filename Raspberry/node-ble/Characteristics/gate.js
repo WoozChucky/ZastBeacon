@@ -1,23 +1,20 @@
 var util = require('util');
-var Struct = require('struct');
+
 var bleno = require('bleno');
-var dgram = require('dgram');
 
 var BlenoCharacteristic = bleno.Characteristic;
 
-var helper = require('./helper');
+var helper = require('../helper');
 var Helper = new helper();
 
 var PORT = 9010;
 var HOST = '127.0.0.1';
 
-var server = dgram.createSocket('udp4');
+var Configuration = require('./../Config/bluetooth')  // JSON file with BLE configurations for Bleno
 
-const CHECKIN = "CHECKIN";
-
-var MobilityCharacteristic = function(HandshakeCharacteristic) {
-    MobilityCharacteristic.super_.call(this, {
-        uuid: 'ec02',
+var GateCharacteristic = function(HandshakeCharacteristic) {
+    GateCharacteristic.super_.call(this, {
+        uuid: Configuration.GATE_UUID,
         properties: ['read', 'write'],
         value: null
     });
@@ -26,9 +23,9 @@ var MobilityCharacteristic = function(HandshakeCharacteristic) {
     this._valid = false;
 };
 
-util.inherits(MobilityCharacteristic, BlenoCharacteristic);
+util.inherits(GateCharacteristic, BlenoCharacteristic);
 
-MobilityCharacteristic.prototype.onReadRequest = function(offset, callback) {
+GateCharacteristic.prototype.onReadRequest = function(offset, callback) {
     if(!this.HandshakeCharacteristic.IsAuthenticated())
     {
         console.log('Client not Authenticated');
@@ -36,8 +33,7 @@ MobilityCharacteristic.prototype.onReadRequest = function(offset, callback) {
         return;
     }
 
-    console.log('MobilityCharacteristic - onReadRequest: value = ' + this._valid.toString('utf-8'));
-    this.HandshakeCharacteristic._auth = false;
+    console.log('GateCharacteristic - onReadRequest: value = ' + this._value.toString('utf-8'));
     if(this._valid == true)
     {
         var response = Buffer.from('OK', 'utf8');
@@ -50,7 +46,7 @@ MobilityCharacteristic.prototype.onReadRequest = function(offset, callback) {
     this._valid = false;
 };
 
-MobilityCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
+GateCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
     this._value = data;
 
     if(!this.HandshakeCharacteristic.IsAuthenticated())
@@ -60,7 +56,7 @@ MobilityCharacteristic.prototype.onWriteRequest = function(data, offset, without
         return;
     }
 
-    //console.log('MobilityCharacteristic - onWriteRequest: value = ' + this._value.toString('utf-8'));
+    console.log('GateCharacteristic - onWriteRequest: value = ' + this._value.toString('utf-8'));
 
     if(this._value == undefined || this._value == "")
     {
@@ -69,17 +65,17 @@ MobilityCharacteristic.prototype.onWriteRequest = function(data, offset, without
         return;
     }
 
-    server.on('message', function (message, remote) {
-        console.log(remote.address + ':' + remote.port +' - ' + message);
+    /* server.on('message', function (message, remote) {
+        console.log(remote.address + ':' + remote.port +' - ' + message); */
 
-	if(message == '0') {
+	if(true) {
 		Helper.Write(this._value);
 		Helper.BlinkLED();
 		this._valid = true;
 		console.log("Success!");
 	}
-    });
-
+    
+    /* });
     var ZaBeaconCommand = Struct()
 	.word32Sle('operationType')
 	.word32Sle('checkinType')
@@ -104,11 +100,11 @@ MobilityCharacteristic.prototype.onWriteRequest = function(data, offset, without
     server.send(message, 0, message.length, 9000, '127.0.0.1', function (err, bytes) {
 		if (err) throw err;
     		console.log('UDP message sent to ' + HOST +': 9000');	
-	});
+	}); */
 
     callback(this.RESULT_SUCCESS);
 };
 
-server.bind(PORT, HOST);
+//server.bind(PORT, HOST);
 
-module.exports = MobilityCharacteristic;
+module.exports = GateCharacteristic;

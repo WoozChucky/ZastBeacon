@@ -1,0 +1,13 @@
+{
+    "DEVICE_NAME": "ZastValidator",
+    "MODE": 0,
+    "SERVICE_UUID": "5e9eb8ee-df6f-4613-8c44-5738513b1d20",
+    "AUTH_CHAR_UUID": "5e9eb8ee-df6f-4613-8c44-5738513b1d21",
+    "GATE_UUID": "5e9eb8ee-df6f-4613-8c44-5738513b1d22",
+    "CONFIGURE_UUID": "5e9eb8ee-df6f-4613-8c44-5738513b1d23",
+    "BUS_UUID": "5e9eb8ee-df6f-4613-8c44-5738513b1d24",
+    "TEST_UUID": "5e9eb8ee-df6f-4613-8c44-5738513b1d25",
+    "OPERATOR_ID": 0,
+    "LINE_ID": 0,
+    "END_STATION_ID": 0
+}

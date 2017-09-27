@@ -1,17 +1,16 @@
 {
-  "name": "node-ble",
-  "version": "1.0.0",
-  "description": "Mobility NodeJs BLE Server",
-  "main": "index.js",
+  "name": "zast-beacon",
+  "version": "2.0.0",
+  "description": "Zast Beacon NodeJs Controller",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "BLENO_ADVERTISING_INTERVAL=50 forever app.js"
   },
-  "author": "Mobility @ Novabase",
+  "author": "Nuno Silva (NB22477) @ CityPulse",
   "license": "ISC",
   "devDependencies": {
-    "bleno": "^0.4.2",
-    "nodemon": "^1.11.0",
-    "play-sound": "^1.1.1"
+    "bleno": "^0.4.2"
   },
   "dependencies": {
     "forever": "^0.15.3"

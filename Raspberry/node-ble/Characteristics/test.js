@@ -4,7 +4,7 @@ var bleno = require('bleno');
 
 var BlenoCharacteristic = bleno.Characteristic;
 
-var Configuration = require('./../Config/bluetooth')  // JSON file with BLE configurations for Bleno
+var Configuration = require('./../Config/bluetooth');  // JSON file with BLE configurations for Bleno
 
 var TestCharacteristic = function(HandshakeCharacteristic) {
     TestCharacteristic.super_.call(this, {
@@ -40,5 +40,5 @@ TestCharacteristic.prototype.onReadRequest = function(offset, callback) {
     this._valid = false;
 };
 
-
+// export the class
 module.exports = TestCharacteristic;

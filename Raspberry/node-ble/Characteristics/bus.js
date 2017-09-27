@@ -1,5 +1,5 @@
 var util = require('util');
-
+var events = require('events');
 var bleno = require('bleno');
 
 var BlenoCharacteristic = bleno.Characteristic;
@@ -20,15 +20,16 @@ var BusCharacteristic = function(HandshakeCharacteristic) {
 util.inherits(BusCharacteristic, BlenoCharacteristic);
 
 BusCharacteristic.prototype.onReadRequest = function(offset, callback) {
-    if(!this.HandshakeCharacteristic.IsAuthenticated())
+    if(this.HandshakeCharacteristic.IsAuthenticated())
     {
-        console.log('Client not Authenticated');
+        console.log('[BLE] Device not Authenticated');
         callback(this.RESULT_UNLIKELY_ERROR, 0);
         return;
     }
 
-    console.log('BusCharacteristic - onReadRequest: value = ' + this._value.toString('utf-8'));
-    if(this._valid == true)
+    console.log('[BLE] BusCharacteristic - onReadRequest: valid = ' + this._valid);
+
+    if(this._valid)
     {
         var response = Buffer.from('OK', 'utf8');
         callback(this.RESULT_SUCCESS, response);
@@ -43,33 +44,27 @@ BusCharacteristic.prototype.onReadRequest = function(offset, callback) {
 BusCharacteristic.prototype.onWriteRequest = function(data, offset, withoutResponse, callback) {
     this._value = data;
 
-    if(!this.HandshakeCharacteristic.IsAuthenticated())
+    if(this.HandshakeCharacteristic.IsAuthenticated())
     {
-        console.log('Client not Authenticated');
+        console.log('[BLE] Device not Authenticated');
         callback(this.RESULT_UNLIKELY_ERROR, 0);
         return;
     }
 
-    console.log('BusCharacteristic - onWriteRequest: value = ' + this._value.toString('utf-8'));
+    console.log('[BLE] BusCharacteristic - onWriteRequest: value = ' + this._value.toString('utf-8'));
 
     if(this._value == undefined || this._value == "")
     {
-        console.log('Null user input');
+        console.log('[BLE] Null user input');
         callback(this.RESULT_UNLIKELY_ERROR, 0);
         return;
     }
 
-    /* server.on('message', function (message, remote) {
-        console.log(remote.address + ':' + remote.port +' - ' + message); */
-
-	if(true) {
-		Helper.Write(this._value);
-		Helper.BlinkLED();
-		this._valid = true;
-		console.log("Success!");
-    }
-    
-    callback(this.RESULT_SUCCESS);
+    this.emit('onWrite', this._value.toString('utf-8'), callback, 
+        (value) => {
+            this._valid = value;
+        }
+    );
 };
 
 module.exports = BusCharacteristic;

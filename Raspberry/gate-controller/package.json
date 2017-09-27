@@ -1,0 +1,11 @@
+{
+  "name": "gate-controller",
+  "version": "1.0.0",
+  "description": "NB Gate Controller Simulator",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Nuno Silva (NB22477)",
+  "license": "ISC"
+}

@@ -71,4 +71,4 @@ $ npm start
    [bleno]: <https://github.com/sandeepmistry/bleno>
    [node.js]: <http://nodejs.org>
    [NodeJS]: <http://nodejs.org>
-   [BlueZ] : <http://www.bluez.org/>
+   [BlueZ]: <http://www.bluez.org/>

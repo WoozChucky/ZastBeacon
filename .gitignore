@@ -243,3 +243,5 @@ ModelManifest.xml
 
 ./ZastGate
 ./ZastUSB
+ZastGate/*
+ZastUSB/*

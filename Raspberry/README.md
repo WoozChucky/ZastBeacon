@@ -22,9 +22,8 @@ ZastBeacon one open source project to work properly:
 
 ### Prerequisites
 * Linux (Kernel Version 3.6 >=)
-* NodeJS
+* [Node.js]
 * [BlueZ] (Version 5.14 >=)
-* (https://github.com/sandeepmistry/bleno#linux)
 
 In the root folder of the repository there's a bash script that installs all prerequisites.
 It has to be run with super user previleges.
@@ -71,3 +70,5 @@ $ npm start
 
    [bleno]: <https://github.com/sandeepmistry/bleno>
    [node.js]: <http://nodejs.org>
+   [NodeJS]: <http://nodejs.org>
+   [BlueZ] : <http://www.bluez.org/>

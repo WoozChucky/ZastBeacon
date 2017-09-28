@@ -43,7 +43,7 @@ Install the dependencies and devDependencies and start the application.
 ```sh
 $ cd node-ble
 $ npm install -d
-$ node start
+$ npm start
 ```
 
 For simulator environments...

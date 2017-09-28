@@ -10,15 +10,14 @@
 
 ### Tech
 
-ZastBeacon one open source project to work properly:
+ZastBeacon uses one open source project to work properly:
 
 * [Bleno] - A Node.js module for implementing BLE (Bluetooth Low Energy) peripheral.
  
 ### Folder Structure
-* .vscode (Run/debug configurations for Visual Studio Code)
 * node-ble (Application source)
 * gate-controller (Simulator to test everything on the same machine)
-* .install.sh (Installation script)
+* install.sh (Installation script)
 
 ### Prerequisites
 * Linux (Kernel Version 3.6 >=)

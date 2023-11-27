@@ -13,6 +13,6 @@
     "bleno": "^0.4.2"
   },
   "dependencies": {
-    "forever": "^0.15.3"
+    "forever": "^3.0.4"
   }
 }
